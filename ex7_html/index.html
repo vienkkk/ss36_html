@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f4f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .form-container {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0069d9;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .link {
+            margin-top: 10px;
+            display: block;
+            color: #007bff;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .link:hover {
+            text-decoration: underline;
+        }
+
+        label {
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Đăng ký -->
+    <div id="registerForm" class="form-container">
+        <h2>Đăng ký</h2>
+        <form id="register">
+            <input type="text" id="username" placeholder="Tên đăng nhập" required>
+            <input type="password" id="password" placeholder="Mật khẩu" required>
+            <button type="button" onclick="register()">Đăng ký</button>
+        </form>
+        <a href="#" class="link" onclick="switchToLogin()">Quay lại đăng nhập</a>
+    </div>
+
+    <!-- Đăng nhập -->
+    <div id="loginForm" class="form-container hidden">
+        <h2>Đăng nhập</h2>
+        <form id="login">
+            <input type="text" id="loginUsername" placeholder="Tên đăng nhập" required>
+            <input type="password" id="loginPassword" placeholder="Mật khẩu" required>
+            <label><input type="checkbox" id="rememberMe"> Ghi nhớ tôi</label>
+            <button type="button" onclick="login()">Đăng nhập</button>
+        </form>
+        <a href="#" class="link" onclick="switchToRegister()">Chưa có tài khoản? Đăng ký</a>
+    </div>
+
+    <!-- Trang chủ -->
+    <div id="home" class="form-container hidden">
+        <h2 id="welcome"></h2>
+        <button onclick="logout()">Đăng xuất</button>
+    </div>
+
+    <script>
+        function register() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            if (localStorage.getItem(username)) {
+                alert('Tên người dùng đã tồn tại!');
+            } else {
+                localStorage.setItem(username, JSON.stringify({ password }));
+                alert('Đăng ký thành công!');
+                switchToLogin();
+            }
+        }
+
+        function login() {
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+            const rememberMe = document.getElementById('rememberMe').checked;
+
+            const user = JSON.parse(localStorage.getItem(username));
+
+            if (user && user.password === password) {
+                alert('Đăng nhập thành công!');
+                if (rememberMe) {
+                    localStorage.setItem('loggedIn', username);
+                }
+                document.getElementById('loginForm').classList.add('hidden');
+                document.getElementById('home').classList.remove('hidden');
+                document.getElementById('welcome').innerText = `Chào mừng, ${username}!`;
+            } else {
+                alert('Tên người dùng hoặc mật khẩu không đúng!');
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('loggedIn');
+            document.getElementById('home').classList.add('hidden');
+            document.getElementById('loginForm').classList.remove('hidden');
+        }
+
+
+        function switchToRegister() {
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('registerForm').classList.remove('hidden');
+        }
+
+        function switchToLogin() {
+            document.getElementById('registerForm').classList.add('hidden');
+            document.getElementById('loginForm').classList.remove('hidden');
+        }
+
+        window.onload = function () {
+            const loggedInUser = localStorage.getItem('loggedIn');
+            if (loggedInUser) {
+                document.getElementById('registerForm').classList.add('hidden');
+                document.getElementById('loginForm').classList.add('hidden');
+                document.getElementById('home').classList.remove('hidden');
+                document.getElementById('welcome').innerText = `Chào mừng, ${loggedInUser}!`;
+            } else {
+                // Hiển thị form đăng nhập mặc định nếu chưa đăng nhập
+                document.getElementById('registerForm').classList.add('hidden');
+                document.getElementById('loginForm').classList.remove('hidden');
+                document.getElementById('home').classList.add('hidden');
+            }
+        };
+
+    </script>
+</body>
+
+</html>
