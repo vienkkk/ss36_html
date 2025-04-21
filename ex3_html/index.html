@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Document</title>
+  <style>
+    button {
+      width: 100px;
+      height: 40px;
+      color: black;
+      border: none;
+      border-radius: 10px;
+      margin: 20px;
+    }
+  </style>
+</head>
+<body>
+  Chọn màu bạn yêu thích
+  <div class="container">
+    <button onclick="change_color('red')" style="background-color:red">Đỏ</button>
+    <button onclick="change_color('blue')" style="background-color: blue;">Xanh</button>
+    <button onclick="change_color('yellow')" style="background-color: yellow;">Vàng</button>
+    <button onclick="change_color('purple')" style="background-color: purple;">Tím</button>
+  </div>
+  Trang sẽ ghi nhớ khi bạn tải lại!
+  <script>
+
+    const savedColor = localStorage.getItem("color");
+    if (savedColor) {
+      document.body.style.backgroundColor = savedColor;
+    }
+
+    function change_color(color) {
+      document.body.style.backgroundColor = color;
+      localStorage.setItem("color", color); 
+    }
+  </script>
+</body>
+</html>

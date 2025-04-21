@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+        .container {
+            display: flex;
+            gap: 20px;
+            margin: 20px;
+        }
+
+        img {
+            width: 200px;
+            height: 100px;
+        }
+
+        button {
+            color: aliceblue;
+            background-color: green;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>
+        Bạn thích món nào nhất?
+    </h1>
+
+    <div class="container">
+        <img src="meo1.jpg" />
+        <div class="content">
+            Bún bò Huế
+            <p id="like0">❤️ 0 lượt thích</p>
+            <button onclick="count_tang(0)">Thích +1</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <img src="meo2.jpg" />
+        <div class="content">
+            Phở bò Hà Nội
+            <p id="like1">❤️ 0 lượt thích</p>
+            <button onclick="count_tang(1)">Thích +1</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <img src="meo3.jpg" />
+        <div class="content">
+            Cơm tấm Sài Gòn
+            <p id="like2">❤️ 0 lượt thích</p>
+            <button onclick="count_tang(2)">Thích +1</button>
+        </div>
+    </div>
+
+    <script>
+        let counts = [0, 0, 0];
+        if (localStorage.getItem("likes")) {
+            counts = JSON.parse(localStorage.getItem("likes"));
+        }
+        function count_tang(index) {
+            counts[index]++;
+            localStorage.setItem("likes", JSON.stringify(counts));
+            show();
+        }
+        function show() {
+            for (let i = 0; i < counts.length; i++) {
+                document.getElementById("like" + i).innerText = `❤️ ${counts[i]} lượt thích`;
+            }
+        }
+        show();
+    </script>
+</body>
+
+</html>

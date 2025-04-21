@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Quản lý công việc</title>
+    <link rel="stylesheet" href="./style.css" />
+</head>
+
+<body>
+    <h2>🗂️ Quản lý công việc (Task Board)</h2>
+
+    <div class="task-input">
+        <input type="text" id="taskName" placeholder="Nhập tên công việc..." />
+        <button onclick="add_task()" id="addTask">Thêm</button>
+    </div>
+
+    <div class="board">
+        <div class="column" id="pendingCol">
+            <h3>🕐 Chờ xử lý</h3>
+            <div id="pendingTasks"></div>
+        </div>
+        <div class="column" id="inProgressCol">
+            <h3>🔨 Đang làm</h3>
+            <div id="inProgressTasks"></div>
+        </div>
+        <div class="column" id="doneCol">
+            <h3>✅ Hoàn thành</h3>
+            <div id="doneTasks"></div>
+        </div>
+    </div>
+
+    <script>
+        let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+        function save_local() {
+            localStorage.setItem("tasks", JSON.stringify(tasks));
+        }
+
+        function renderData() {
+            let pendingCol = document.getElementById("pendingTasks");
+            let progressCol = document.getElementById("inProgressTasks");
+            let doneCol = document.getElementById("doneTasks");
+            pendingCol.innerHTML = "";
+            progressCol.innerHTML = "";
+            doneCol.innerHTML = "";
+
+            tasks.forEach((el) => {
+                let div = document.createElement("div");
+                div.innerHTML = `${el.name}`;
+                if (el.status !== "doneCol") {
+                    const button = document.createElement("button");
+                    button.textContent = "Chuyển trạng thái";
+                    button.addEventListener("click", () => {
+                        if (el.status === "pendingCol") el.status = "inProgressCol";
+                        else if (el.status === "inProgressCol") el.status = "doneCol";
+                        save_local();
+                        renderData();
+                    });
+                    div.appendChild(button);
+                }
+                if (el.status === "pendingCol") pendingCol.appendChild(div);
+                if (el.status === "inProgressCol") progressCol.appendChild(div);
+                if (el.status === "doneCol") doneCol.appendChild(div);
+            });
+        }
+
+        function add_task() {
+            let input = document.getElementById("taskName").value;
+            let temp = {
+                name: input,
+                status: "pendingCol"
+            };
+            tasks.push(temp);
+            save_local();
+            renderData();
+        }
+
+        renderData();
+    </script>
+</body>
+
+</html>

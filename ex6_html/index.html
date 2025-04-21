@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hệ thống đánh giá sản phẩm</title>
+    <link rel="stylesheet" href="./style.css" />
+</head>
+
+<body>
+    <div class="product">
+        <h2>Sản phẩm: Tai nghe Bluetooth</h2>
+        <img src="https://imgs.search.brave.com/JRPdDRzOPxD2puv-eXZx8AiHMt7ySnUVRZs4uCbu7CI/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5nZXR0eWltYWdl/cy5jb20vaWQvMTI5/NDk2NjY4Ni9waG90/by9iZWlqaW5nLWNo/aW5hLWFpcnBvZHMt/bWF4LWlzLXNlZW4t/YXQtYW4tYXBwbGUt/c3RvcmUtb24tamFu/dWFyeS0yLTIwMjEt/aW4tYmVpamluZy1j/aGluYS5qcGc_cz02/MTJ4NjEyJnc9MCZr/PTIwJmM9aXlyd0Np/TkJ6UW9jZzdUTHEt/LTNpNGM5dXpiTkda/NHprOW4tdUwwRWtk/Zz0"
+            alt="" />
+        <p>Đánh giá sản phẩm:</p>
+        <div id="rating">
+            <span class="stars" data-value="1">★</span>
+            <span class="stars" data-value="2">★</span>
+            <span class="stars" data-value="3">★</span>
+            <span class="stars" data-value="4">★</span>
+            <span class="stars" data-value="5">★</span>
+        </div>
+        <p id="selected-rating">Bạn chưa đánh giá.</p>
+
+        <!-- Bình luận -->
+        <div class="comment-section">
+            <h3>Bình luận</h3>
+            <textarea id="comment-input" class="comment-box" placeholder="Nhập bình luận..."></textarea>
+            <button onclick="submitReview()">Gửi</button>
+            <ul id="comment-list" class="comment-list">
+                <!-- sử dụng thẻ li và bên trong là thẻ span chứa sao và thẻ b chưa nội dung đánh giá -->
+                <!-- <li> <span>★★★★★<span> <b>Hay qué</b> </li> -->
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Biến lưu trữ số sao đã chọn
+        let selectedRating = 0;
+        const STORAGE_KEY = 'product_reviews';
+
+        // Khởi tạo sự kiện khi trang được tải
+        document.addEventListener('DOMContentLoaded', function () {
+            // Load comments từ Local Storage khi trang được tải
+            loadComments();
+
+            // Thêm sự kiện click cho các ngôi sao
+            const stars = document.querySelectorAll('.stars');
+            stars.forEach(star => {
+                star.addEventListener('click', function () {
+                    selectedRating = parseInt(this.getAttribute('data-value'));
+                    updateSelectedRatingDisplay();
+                    highlightStars(selectedRating);
+                });
+            });
+        });
+
+        // Hàm cập nhật hiển thị số sao đã chọn
+        function updateSelectedRatingDisplay() {
+            const ratingDisplay = document.getElementById('selected-rating');
+            ratingDisplay.textContent = `Bạn đã chọn: ${selectedRating} sao`;
+        }
+
+        // Hàm làm nổi bật các ngôi sao đã chọn
+        function highlightStars(rating) {
+            const stars = document.querySelectorAll('.stars');
+            stars.forEach(star => {
+                const starValue = parseInt(star.getAttribute('data-value'));
+                if (starValue <= rating) {
+                    star.classList.add('active');
+                } else {
+                    star.classList.remove('active');
+                }
+            });
+        }
+
+        // Hàm gửi đánh giá
+        function submitReview() {
+            const commentInput = document.getElementById('comment-input');
+            const comment = commentInput.value.trim();
+
+            if (selectedRating === 0) {
+                alert('Vui lòng chọn số sao đánh giá!');
+                return;
+            }
+
+            if (comment === '') {
+                alert('Vui lòng nhập bình luận!');
+                return;
+            }
+
+            // Tạo đối tượng đánh giá mới
+            const review = {
+                rating: selectedRating,
+                comment: comment
+            };
+
+            // Lấy danh sách đánh giá từ Local Storage
+            let reviews = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+
+            // Thêm đánh giá mới vào danh sách
+            reviews.push(review);
+
+            // Lưu lại vào Local Storage
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(reviews));
+
+            // Làm mới hiển thị
+            loadComments();
+
+            // Reset form
+            commentInput.value = '';
+            selectedRating = 0;
+            updateSelectedRatingDisplay();
+            highlightStars(0);
+            document.getElementById('selected-rating').textContent = 'Bạn chưa đánh giá.';
+        }
+
+        // Hàm tải và hiển thị các bình luận
+        function loadComments() {
+            const commentList = document.getElementById('comment-list');
+            commentList.innerHTML = '';
+
+            // Lấy danh sách đánh giá từ Local Storage
+            const reviews = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+
+            // Hiển thị từng đánh giá
+            reviews.forEach(review => {
+                const li = document.createElement('li');
+                const stars = '★'.repeat(review.rating);
+                const commentText = document.createElement('b');
+                commentText.textContent = review.comment;
+
+                const dateSpan = document.createElement('span');
+                dateSpan.style.color = '#666';
+
+                const starsSpan = document.createElement('span');
+                starsSpan.innerHTML = stars;
+                starsSpan.style.color = 'gold';
+
+                li.appendChild(starsSpan);
+                li.appendChild(commentText);
+                li.appendChild(dateSpan);
+                commentList.appendChild(li);
+            });
+        }
+    </script>
+</body>
+
+</html>
